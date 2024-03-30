@@ -1,8 +1,11 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"html/template"
 	"os"
+	"strings"
 )
 
 type Page struct {
@@ -13,17 +16,22 @@ type Page struct {
 }
 
 func main() {
-	fileContents, err := os.ReadFile("first-post.txt")
-	if err != nil {
-		panic(err)
-}
+	fileName := flag.String("file", "first-post.txt", "The name of the file to convert to HTML")
+	flag.Parse()
+	TextFileName := strings.TrimSuffix(*fileName, ".txt")
 
 page := Page{
-	TextFilePath: "first-post.txt", 
-	TextFileName: "first-post.txt", 
-	HTMLPagePath: "first-post.html", 
-	Content: string(fileContents),
+	TextFilePath: fmt.Sprintf("%s.txt", TextFileName),
+	HTMLPagePath: fmt.Sprintf("%s.html", TextFileName), 
+	Content: "",
 }
+
+	fileContents, err := os.ReadFile(page.TextFilePath)
+	if err != nil {
+		panic(err)
+} 
+
+page.Content = string(fileContents)
 
 t := template.Must(template.New("template.tmpl").ParseFiles("template.tmpl"))
 
