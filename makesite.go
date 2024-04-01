@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -67,6 +68,16 @@ if err != nil {
 
 t.Execute(newFile, page)
 
-fmt.Printf("Created %s\n", page.HTMLPagePath)
+// get the size of the new file
+fileInfo, err := newFile.Stat()
+if err != nil {
+	panic(err)
+}
+
+if fileInfo.Size() == 0 {
+	panic("The file was not created")
+}
+
+fmt.Printf("Created %s\n", page.HTMLPagePath + strconv.FormatInt(fileInfo.Size(), 10))
 
 }
