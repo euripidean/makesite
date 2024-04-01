@@ -23,26 +23,30 @@ func main() {
 	
 
 	// find all the text files in the directory
+	var fileNames []string
+
 	err := filepath.Walk(*dir, func(path string, info os.FileInfo, err error) error {
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
-        if strings.HasSuffix(info.Name(), ".txt") {
-            createHTMLPage(strings.TrimSuffix(info.Name(), ".txt"))
-        }
+		if strings.HasSuffix(info.Name(), ".txt") {
+			fileNames = append(fileNames, info.Name())
+			createHTMLPage(path, strings.TrimSuffix(info.Name(), ".txt"))
+		}
 
-        return nil
-    })
+		return nil
+	})
 
     if err != nil {
         panic(err)
     }
+	fmt.Printf("\033[1;32mSuccess!\033[0m Generated %d pages\n", len(fileNames))
 }
 
-func createHTMLPage(TextFileName string) {
+func createHTMLPage(TextFilePath string, TextFileName string) {
 	page := Page{
-	TextFilePath: fmt.Sprintf("%s.txt", TextFileName),
+	TextFilePath: TextFilePath,
 	HTMLPagePath: fmt.Sprintf("%s.html", TextFileName), 
 	Content: "",
 }
@@ -62,4 +66,7 @@ if err != nil {
 }
 
 t.Execute(newFile, page)
+
+fmt.Printf("Created %s\n", page.HTMLPagePath)
+
 }
