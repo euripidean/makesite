@@ -63,6 +63,9 @@ translatedText, err := gtranslate.TranslateWithParams(originalText, gtranslate.T
 	From: "en",
 	To: "fr",
 })
+if err != nil {
+	panic(err)
+}
 
 page.Content = translatedText
 
