@@ -6,8 +6,9 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
+
+	"github.com/bregydoc/gtranslate"
 )
 
 type Page struct {
@@ -57,7 +58,13 @@ func createHTMLPage(TextFilePath string, TextFileName string) {
 		panic(err)
 } 
 
-page.Content = string(fileContents)
+originalText := string(fileContents)
+translatedText, err := gtranslate.TranslateWithParams(originalText, gtranslate.TranslationParams{
+	From: "en",
+	To: "fr",
+})
+
+page.Content = translatedText
 
 t := template.Must(template.New("template.tmpl").ParseFiles("template.tmpl"))
 
@@ -78,6 +85,5 @@ if fileInfo.Size() == 0 {
 	panic("The file was not created")
 }
 
-fmt.Printf("Created %s\n", page.HTMLPagePath + strconv.FormatInt(fileInfo.Size(), 10))
 
 }
