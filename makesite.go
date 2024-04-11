@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/bregydoc/gtranslate"
 )
@@ -18,8 +19,10 @@ type Page struct {
 	Content	  string
 }
 
+var totalFileSize int
+
 func main() {
-	// fileName := flag.String("file", "first-post.txt", "The name of the file to convert to HTML")
+	startTime := time.Now()
 	dir := flag.String("dir", ".", "The directory where the text file is located")
 	flag.Parse()
 	
@@ -43,10 +46,14 @@ func main() {
     if err != nil {
         panic(err)
     }
-	fmt.Printf("\033[1;32mSuccess!\033[0m Generated %d pages\n", len(fileNames))
+	endTime := time.Now()
+	duration := endTime.Sub(startTime)
+	fmt.Printf("\033[1;32mSuccess!\033[0m Generated \033[1m%d\033[0m pages (%.1fKB total) in %.2f seconds.\n", len(fileNames), float64(totalFileSize)/1024, duration.Seconds())
+	
 }
 
 func createHTMLPage(TextFilePath string, TextFileName string) {
+	
 	page := Page{
 	TextFilePath: TextFilePath,
 	HTMLPagePath: fmt.Sprintf("%s.html", TextFileName), 
@@ -65,6 +72,8 @@ translatedText, err := gtranslate.TranslateWithParams(originalText, gtranslate.T
 })
 if err != nil {
 	panic(err)
+} else {
+	fmt.Printf("\033[1;33mTranslated %s\033[0m\n", page.TextFilePath)
 }
 
 page.Content = translatedText
@@ -86,7 +95,8 @@ if err != nil {
 
 if fileInfo.Size() == 0 {
 	panic("The file was not created")
+} else {
+	totalFileSize += int(fileInfo.Size())
+	fmt.Printf("\033[1;33mGenerated %s\033[0m\n", page.HTMLPagePath)
 }
-
-
 }
